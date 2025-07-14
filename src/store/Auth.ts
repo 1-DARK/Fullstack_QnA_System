@@ -30,3 +30,37 @@ interface IAuthStore {
     }>
     logout(): Promise<void>
 }
+
+
+export const useAuthStore = create<IAuthStore>()(
+    persist(
+        immer((set) => ({
+            session: null,
+            jwt: null,
+            user: null,
+            hydrated: false,
+            setHydrated() {
+                set({ hydrated: true })
+            },
+            async verifySession() {
+
+            },
+            async login(email, password) {
+
+            },
+            async createAccount(name, email, password, Six_Digit_SecurityPin) {
+
+            },
+            async logout() {
+
+            },
+        })), {
+        name: "auth",
+        onRehydrateStorage() {
+            return (state, error) => {
+                if (!error) state?.setHydrated
+            }
+        }
+    }
+    )
+)
