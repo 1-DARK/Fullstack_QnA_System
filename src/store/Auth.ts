@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { persist } from "zustand/middleware";
+import { persist } from "zustand/middleware"; // Persist: Saves state to localStorage for session persistence.
 import { AppwriteException, ID, Models } from "appwrite";
 import { account } from "@/models/client/config";
 
@@ -93,10 +93,11 @@ export const useAuthStore = create<IAuthStore>()(
                 }
             },
         })), {
-        name: "auth",
+        name: "auth", // localStorage key
         onRehydrateStorage() {
+            // Called when persisted state is loaded
             return (state, error) => {
-                if (!error) state?.setHydrated
+                if (!error) state?.setHydrated // Marks store as hydrated
             }
         }
     }
