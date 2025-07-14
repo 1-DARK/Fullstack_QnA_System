@@ -10,7 +10,7 @@ export interface UserPrefs {
 interface IAuthStore {
     session: Models.Session | null;
     jwt: string | null
-    users: Models.User<UserPrefs> | null
+    user: Models.User<UserPrefs> | null
     hydrated: boolean
     setHydrated(): void;
     verifySession(): Promise<void>
@@ -24,7 +24,6 @@ interface IAuthStore {
         name: string,
         email: string,
         password: string,
-        Six_Digit_SecurityPin: number,
     ): Promise<{
         success: boolean; error?: AppwriteException | null
     }>
@@ -43,16 +42,55 @@ export const useAuthStore = create<IAuthStore>()(
                 set({ hydrated: true })
             },
             async verifySession() {
-
+                try {
+                    const session = await account.getSession("current")
+                    set({ session })
+                } catch (error) {
+                    console.log(error)
+                }
             },
             async login(email, password) {
-
+                try {
+                    const session = await account.createEmailPasswordSession(email, password)
+                    const [user, { jwt }] = await Promise.all([
+                        account.get<UserPrefs>(),
+                        account.createJWT() // create jet token
+                    ])
+                    if (!user.prefs?.reputation) await account.updatePrefs<UserPrefs>({
+                        reputation: 0
+                    })
+                    set({ session, user, jwt })
+                    return { success: true }
+                } catch (error) {
+                    console.log(error)
+                    return {
+                        success: false,
+                        error: error instanceof AppwriteException ? error : null
+                    }
+                }
             },
-            async createAccount(name, email, password, Six_Digit_SecurityPin) {
+            async createAccount(name: string, email: string, password: string
+            ) {
+                try {
+                    await account.create(ID.unique(), email, password, name)
+                    return { success: true }
+                } catch (error) {
+                    console.log(error)
+                    return {
+                        success: false,
+                        error: error instanceof AppwriteException ? error : null,
+                    }
+                }
 
             },
             async logout() {
+                try {
+                    await account.deleteSessions()
+                    set({ session: null, jwt: null, user: null })
+                } catch (error) {
 
+                    console.log(error)
+                }
             },
         })), {
         name: "auth",
