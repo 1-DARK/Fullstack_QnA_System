@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     if (response.documents[0]?.voteStatus !== voteStatus) {
       //
     }
-    const [upvotes, dowbvotes] = await Promise.all([
+    const [upvotes, downvotes] = await Promise.all([
       databases.listDocuments(db, voteCollection, [
         Query.equal("type", type),
         Query.equal("typeId", typeId),
@@ -32,8 +32,26 @@ export async function POST(request: NextRequest) {
         Query.equal("votedById", votedById),
         Query.limit(1), // for optimization as we only need total
       ]),
-      databases.listDocuments(db, voteCollection, []),
+      databases.listDocuments(db, voteCollection, [
+        Query.equal("type", type),
+        Query.equal("typeId", typeId),
+        Query.equal("voteStatus", "downvoted"),
+        Query.equal("votedById", votedById),
+        Query.limit(1), // for optimization as we only need total
+      ]),
     ]);
+    return NextResponse.json(
+      {
+        data: {
+          document: null,
+          voteResult: upvotes.total - downvotes.total,
+        },
+        message: "Vote Withdrawn",
+      },
+      {
+        status: 200,
+      }
+    );
   } catch (error: any) {
     return NextResponse.json(
       {
