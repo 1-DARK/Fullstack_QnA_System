@@ -13,6 +13,13 @@ export async function POST(request: NextRequest) {
       Query.equal("typeId", typeId),
       Query.equal("votedById", votedById),
     ]);
+    if (response.documents.length > 0) {
+      await databases.deleteDocument(
+        db,
+        voteCollection,
+        response.documents[0].$id
+      );
+    }
   } catch (error: any) {
     return NextResponse.json(
       {
