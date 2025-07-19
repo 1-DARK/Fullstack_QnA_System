@@ -1,5 +1,11 @@
-import { db, voteCollection } from "@/models/name";
-import { databases } from "@/models/server/config";
+import {
+  answerCollection,
+  db,
+  questionCollection,
+  voteCollection,
+} from "@/models/name";
+import { databases, users } from "@/models/server/config";
+import { UserPrefs } from "@/store/Auth";
 import { NextRequest, NextResponse } from "next/server";
 import { Query } from "node-appwrite";
 
@@ -19,7 +25,24 @@ export async function POST(request: NextRequest) {
         voteCollection,
         response.documents[0].$id
       );
+      //decrease the reputation of the question/answer author
+      const QuestionOrAnswer = await databases.getDocument(
+        db,
+        type === "question" ? questionCollection : answerCollection,
+        typeId
+      );
+      const authorPrefs = await users.getPrefs<UserPrefs>(
+        QuestionOrAnswer.authorId
+      );
+
+      await users.updatePrefs<UserPrefs>(QuestionOrAnswer.authorId, {
+        reputation:
+          response.documents[0].voteStatus === "upvoted"
+            ? Number(authorPrefs.reputation) - 1
+            : Number(authorPrefs.reputation) + 1,
+      });
     }
+
     // that means prev vote does not exists or voteStatus changed
     if (response.documents[0]?.voteStatus !== voteStatus) {
       //
