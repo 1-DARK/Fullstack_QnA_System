@@ -7,7 +7,7 @@ import {
 import { databases, users } from "@/models/server/config";
 import { UserPrefs } from "@/store/Auth";
 import { NextRequest, NextResponse } from "next/server";
-import { Query } from "node-appwrite";
+import { ID, Query } from "node-appwrite";
 
 export async function POST(request: NextRequest) {
   try {
@@ -45,7 +45,44 @@ export async function POST(request: NextRequest) {
 
     // that means prev vote does not exists or voteStatus changed
     if (response.documents[0]?.voteStatus !== voteStatus) {
-      //
+      const doc = await databases.createDocument(
+        db,
+        voteCollection,
+        ID.unique(),
+        {
+          type,
+          typeId,
+          voteStatus,
+          votedById,
+        }
+      );
+      // Increate/Decrease the reputation of the question/answer author accordingly
+      const QuestionOrAnswer = await databases.getDocument(
+        db,
+        type === "question" ? questionCollection : answerCollection,
+        typeId
+      );
+      const authorPrefs = await users.getPrefs<UserPrefs>(
+        QuestionOrAnswer.authorId
+      );
+      // if vote was present
+      if (response.documents[0]) {
+        await users.updatePrefs<UserPrefs>(QuestionOrAnswer.authorId, {
+          reputation:
+            // that means prev vote was "upvoted" and new value is "downvoted" so we have to decrease the reputation
+            response.documents[0].voteStatus === "upvoted"
+              ? Number(authorPrefs.reputation) - 1
+              : Number(authorPrefs.reputation) + 1,
+        });
+      } else {
+        await users.updatePrefs<UserPrefs>(QuestionOrAnswer.authorId, {
+          reputation:
+            // that means prev vote was "upvoted" and new value is "downvoted" so we have to decrease the reputation
+            voteStatus === "upvoted"
+              ? Number(authorPrefs.reputation) + 1
+              : Number(authorPrefs.reputation) - 1,
+        });
+      }
     }
     const [upvotes, downvotes] = await Promise.all([
       databases.listDocuments(db, voteCollection, [
