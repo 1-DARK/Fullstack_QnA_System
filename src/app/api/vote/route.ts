@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
           votedById,
         }
       );
-      // Increate/Decrease the reputation of the question/answer author accordingly
+      // Increase/Decrease the reputation of the question/answer author accordingly
       const QuestionOrAnswer = await databases.getDocument(
         db,
         type === "question" ? questionCollection : answerCollection,
