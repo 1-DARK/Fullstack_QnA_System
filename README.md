@@ -1,36 +1,102 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Fullstack Q&A System
 
-## Getting Started
+A full-stack question and answer system built with modern web technologies.
 
-First, run the development server:
+## Features
 
+- User authentication and authorization
+- Question posting and answering
+- Upvoting/downvoting system
+- Rich text editing
+- Search functionality
+- Responsive design
+
+## Technologies Used
+
+### Frontend
+- React.js
+- Redux (for state management)
+- Material-UI (for UI components)
+- Axios (for HTTP requests)
+
+### Backend
+- Node.js
+- Express.js
+- MongoDB (with Mongoose ODM)
+- JWT (for authentication)
+
+## Installation
+
+### Prerequisites
+- Node.js (v14 or later)
+- MongoDB (running locally or connection string)
+- Git
+
+### Steps
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/1-DARK/Fullstack_QnA_System.git
+cd Fullstack_QnA_System
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies for both frontend and backend:
+```bash
+# Install backend dependencies
+cd backend
+npm install
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+# Install frontend dependencies
+cd ../frontend
+npm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. Set up environment variables:
+- Create a `.env` file in the backend directory with the following:
+```
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+PORT=5000
+```
 
-## Learn More
+4. Run the application:
+```bash
+# From the project root directory
 
-To learn more about Next.js, take a look at the following resources:
+# Start backend server
+cd backend
+npm start
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# In a new terminal, start frontend
+cd ../frontend
+npm start
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The application should now be running:
+- Backend: http://localhost:5000
+- Frontend: http://localhost:3000
 
-## Deploy on Vercel
+## Configuration
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+You can modify the following configuration options:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Backend port: Change the `PORT` in `.env`
+2. Database: Update `MONGO_URI` to point to your MongoDB instance
+3. Frontend API base URL: Modify `src/config.js` in the frontend
+
+## Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contact
+
+For questions or support, please contact [Your Name] at [your.email@example.com]
